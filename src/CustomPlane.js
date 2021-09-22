@@ -52,7 +52,7 @@ const _FS = `
   }
   `;
 
-const zoomSpeed = 0.008;
+const zoomSpeed = 0.04;
 export default function CustomPlane() {
   const shader = useRef();
   const counter = useRef(0);
@@ -60,7 +60,10 @@ export default function CustomPlane() {
   const prevScale = useRef(5);
   const center = useRef([-0.3, 0]);
   const buttonDown = useRef(false);
+  const prevMouse = useRef([]);
   const mousePos = useRef([]);
+  const zooming = useRef(0);
+  const zoomDirection = useRef(0);
 
   const updateCenter = () => {
     const offset = (window.innerWidth - window.innerHeight) / 2;
@@ -71,26 +74,39 @@ export default function CustomPlane() {
     center.current[1] += py * scaleDiff;
   };
   const updateScale = () => {
-    const direction = buttonDown.current === 0 ? -1 : 1;
+    const direction = zoomDirection.current === 0 ? -1 : 1;
     prevScale.current = scale.current;
     scale.current += scale.current * zoomSpeed * direction;
     if (scale.current < 0.00002) scale.current = 0.00002;
     else if (scale.current > 5) scale.current = 5;
   };
+  const translate = () => {
+    const dx =
+      (prevMouse.current[0] - mousePos.current[0]) / window.innerHeight;
+    const dy =
+      (mousePos.current[1] - prevMouse.current[1]) / window.innerHeight;
+    center.current[0] += dx * scale.current;
+    center.current[1] += dy * scale.current;
+    prevMouse.current = mousePos.current;
+  };
 
   useFrame(() => {
-    if (buttonDown.current !== false) {
+    if (zooming.current) {
       updateScale();
       updateCenter();
 
-      shader.current.uniforms.center.value = center.current;
       shader.current.uniforms.scale.value = scale.current;
+      zooming.current--;
+    }
+    if (buttonDown.current) {
+      translate();
     }
     // counter.current += 0.01;
     // shader.current.uniforms.frames.value = counter.current;
   }, []);
   const onPointerDown = (e) => {
-    buttonDown.current = e.button;
+    buttonDown.current = true;
+    prevMouse.current = [e.clientX, e.clientY];
     mousePos.current = [e.clientX, e.clientY];
   };
   const onPointerUp = () => {
@@ -100,6 +116,15 @@ export default function CustomPlane() {
     if (buttonDown.current === false) return;
     mousePos.current = [e.clientX, e.clientY];
   };
+  const onWheel = (e) => {
+    mousePos.current = [e.clientX, e.clientY];
+    zooming.current = 10;
+    if (e.deltaY < 0) {
+      zoomDirection.current = 0;
+    } else {
+      zoomDirection.current = 2;
+    }
+  };
 
   return (
     <mesh
@@ -107,6 +132,7 @@ export default function CustomPlane() {
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onPointerMove={onPointerMove}
+      onWheel={onWheel}
     >
       <planeBufferGeometry args={[window.innerHeight, window.innerHeight]} />
       <shaderMaterial
