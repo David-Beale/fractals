@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 
@@ -17,7 +16,6 @@ const _FS = `
 
 
   void main() {
-    double test = 0.0;
     float maxN = 250.0;
     float zoom = 2.0;
     float a = ((gl_FragCoord.x - offset) / resolution.x - 0.5) * scale + center.x;
@@ -53,42 +51,63 @@ const _FS = `
 
   }
   `;
-const num_atoms = 10;
-const l = [];
-const s = [];
-for (let i = 0; i < 2 * num_atoms; i++) {
-  l.push(Math.random());
-  s.push(Math.random());
-}
+
+const zoomSpeed = 0.008;
 export default function CustomPlane() {
   const shader = useRef();
   const counter = useRef(0);
-  const scale = useRef(0.0001);
-  const targetScale = useRef(0.0001);
-  const center = useRef([0.2510190964592524, -0.00001057574347854329]);
-  const targetCenter = useRef(center.current);
+  const scale = useRef(5);
+  const prevScale = useRef(5);
+  const center = useRef([-0.3, 0]);
+  const buttonDown = useRef(false);
+  const mousePos = useRef([]);
+
+  const updateCenter = () => {
+    const offset = (window.innerWidth - window.innerHeight) / 2;
+    const px = (mousePos.current[0] - offset) / window.innerHeight - 0.5;
+    const py = 0.5 - mousePos.current[1] / window.innerHeight;
+    const scaleDiff = prevScale.current - scale.current;
+    center.current[0] += px * scaleDiff;
+    center.current[1] += py * scaleDiff;
+  };
+  const updateScale = () => {
+    const direction = buttonDown.current === 0 ? -1 : 1;
+    prevScale.current = scale.current;
+    scale.current += scale.current * zoomSpeed * direction;
+    if (scale.current < 0.00002) scale.current = 0.00002;
+    else if (scale.current > 5) scale.current = 5;
+  };
+
   useFrame(() => {
-    center.current[0] += (targetCenter.current[0] - center.current[0]) * 0.01;
-    center.current[1] += (targetCenter.current[1] - center.current[1]) * 0.01;
-    scale.current += (targetScale.current - scale.current) * 0.01;
-    // console.log(center.current);
+    if (buttonDown.current !== false) {
+      updateScale();
+      updateCenter();
+
+      shader.current.uniforms.center.value = center.current;
+      shader.current.uniforms.scale.value = scale.current;
+    }
     // counter.current += 0.01;
-    shader.current.uniforms.center.value = center.current;
-    shader.current.uniforms.scale.value = scale.current;
     // shader.current.uniforms.frames.value = counter.current;
   }, []);
   const onPointerDown = (e) => {
-    const offset = (window.innerWidth - window.innerHeight) / 2;
-    const px = (e.clientX - offset) / window.innerHeight;
-    const py = e.clientY / window.innerHeight;
-    const dx = (px - 0.5) * scale.current;
-    const dy = (0.5 - py) * scale.current;
-    targetCenter.current = [center.current[0] + dx, center.current[1] + dy];
-    targetScale.current = scale.current * 0.1;
-    console.log(scale.current);
+    buttonDown.current = e.button;
+    mousePos.current = [e.clientX, e.clientY];
   };
+  const onPointerUp = () => {
+    buttonDown.current = false;
+  };
+  const onPointerMove = (e) => {
+    if (buttonDown.current === false) return;
+    mousePos.current = [e.clientX, e.clientY];
+  };
+
   return (
-    <mesh position={[0, 0, 0]} onPointerDown={onPointerDown}>
+    <mesh
+      position={[0, 0, 0]}
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+      onPointerMove={onPointerMove}
+    >
       <planeBufferGeometry args={[window.innerHeight, window.innerHeight]} />
       <shaderMaterial
         ref={shader}

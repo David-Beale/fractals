@@ -12,8 +12,16 @@ export default function App() {
     // ];
   };
 
+  const onContextMenu = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
   return (
-    <div className="container" onPointerMove={onPointerMove}>
+    <div
+      className="container"
+      onPointerMove={onPointerMove}
+      onContextMenu={onContextMenu}
+    >
       <Canvas
         orthographic={true}
         camera={{
