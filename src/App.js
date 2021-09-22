@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <Canvas
+        orthographic={true}
+        camera={{
+          position: [0, 0, 0],
+
+          near: 0,
+          far: 10,
+        }}
+      >
+        {/* <OrbitControls /> */}
+        <mesh position={[0, 0, 0]}>
+          <planeBufferGeometry args={[2232, 1297]} />
+          <meshBasicMaterial color="turquoise" />
+        </mesh>
+      </Canvas>
     </div>
   );
 }
-
-export default App;
