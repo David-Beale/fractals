@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const _VS = `
   void main() {
@@ -10,7 +10,7 @@ const _FS = `
   precision highp float;
 
   uniform vec2 resolution;
-  uniform float offset;
+  uniform float ratio;
   uniform vec2 center;
   uniform float scale;
   uniform float counter;
@@ -18,13 +18,13 @@ const _FS = `
 
   void main() {
     float maxN = 250.0;
-    float a = ((gl_FragCoord.x - offset) / resolution.x - 0.5) * scale + center.x;
+    float a = ratio  * ((gl_FragCoord.x / resolution.x - 0.5) * scale + center.x);
     float b = (gl_FragCoord.y / resolution.y - 0.5) * scale + center.y;
 
-    // float ca = a;
-    // float cb = b;
-    float ca = 0.2;
-    float cb = 0.66;
+    float ca = a;
+    float cb = b;
+    // float ca = 0.2;
+    // float cb = 0.66;
     float a2 = 0.0;
     float b2 = 0.0;
 
@@ -54,6 +54,7 @@ const _FS = `
     } 
     vec3 col= vec3(0.0);
     col += 0.5 + 0.6*cos( 2.7 + brightness + vec3(0.99,0.05,0.65));
+    // col += 0.5 + 0.6*cos( 2.7 + brightness + vec3(0.04,0.66,0.99));
 
 
     gl_FragColor = vec4(col, 1.0);
@@ -66,17 +67,40 @@ export default function CustomPlane() {
   const counter = useRef(0);
   const scale = useRef(3);
   const prevScale = useRef(3);
-  const center = useRef([-0.3, 0]);
+  // const center = useRef([-0.3, 0]);
+  const center = useRef([0, 0]);
   const buttonDown = useRef(false);
   const prevMouse = useRef([]);
   const mousePos = useRef([]);
   const zooming = useRef(0);
   const zoomDirection = useRef(0);
   const counterDir = useRef(1);
+  const [windowSize, setWindowSize] = useState([
+    window.innerWidth,
+    window.innerHeight,
+  ]);
+
+  const uniforms = useMemo(() => {
+    return {
+      mouse: { value: [0, 0] },
+      resolution: { value: [window.innerWidth, window.innerHeight] },
+      ratio: {
+        value: window.innerWidth / window.innerHeight,
+      },
+      center: {
+        value: center.current,
+      },
+      scale: {
+        value: scale.current,
+      },
+      counter: {
+        value: counter.current,
+      },
+    };
+  }, []);
 
   const updateCenter = () => {
-    const offset = (window.innerWidth - window.innerHeight) / 2;
-    const px = (mousePos.current[0] - offset) / window.innerHeight - 0.5;
+    const px = mousePos.current[0] / window.innerWidth - 0.5;
     const py = 0.5 - mousePos.current[1] / window.innerHeight;
     const scaleDiff = prevScale.current - scale.current;
     center.current[0] += px * scaleDiff;
@@ -90,14 +114,29 @@ export default function CustomPlane() {
     else if (scale.current > 3) scale.current = 3;
   };
   const translate = () => {
-    const dx =
-      (prevMouse.current[0] - mousePos.current[0]) / window.innerHeight;
+    const dx = (prevMouse.current[0] - mousePos.current[0]) / window.innerWidth;
     const dy =
       (mousePos.current[1] - prevMouse.current[1]) / window.innerHeight;
     center.current[0] += dx * scale.current;
     center.current[1] += dy * scale.current;
     prevMouse.current = mousePos.current;
   };
+
+  useEffect(() => {
+    const windowResize = () => {
+      setWindowSize([window.innerWidth, window.innerHeight]);
+      shader.current.uniforms.ratio.value =
+        window.innerWidth / window.innerHeight;
+      shader.current.uniforms.resolution.value = [
+        window.innerWidth,
+        window.innerHeight,
+      ];
+    };
+    window.addEventListener("resize", windowResize);
+    return () => {
+      window.removeEventListener("resize", windowResize);
+    };
+  }, []);
 
   useFrame(() => {
     if (zooming.current) {
@@ -148,25 +187,10 @@ export default function CustomPlane() {
       onPointerMove={onPointerMove}
       onWheel={onWheel}
     >
-      <planeBufferGeometry args={[window.innerHeight, window.innerHeight]} />
+      <planeBufferGeometry args={windowSize} />
       <shaderMaterial
         ref={shader}
-        uniforms={{
-          mouse: { value: [0, 0] },
-          resolution: { value: [window.innerHeight, window.innerHeight] },
-          offset: {
-            value: (window.innerWidth - window.innerHeight) / 2,
-          },
-          center: {
-            value: center.current,
-          },
-          scale: {
-            value: scale.current,
-          },
-          counter: {
-            value: counter.current,
-          },
-        }}
+        uniforms={uniforms}
         vertexShader={_VS}
         fragmentShader={_FS}
       ></shaderMaterial>
