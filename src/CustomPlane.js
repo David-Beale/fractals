@@ -17,15 +17,12 @@ const _FS = `
 
   void main() {
     float maxN = 250.0;
-    float zoom = 2.0;
     float a = ((gl_FragCoord.x - offset) / resolution.x - 0.5) * scale + center.x;
     float b = (gl_FragCoord.y / resolution.y - 0.5) * scale + center.y;
 
     float ca = a;
     float cb = b;
 
-    float z = 0.0;
-    
     float n = 0.0;
     for (; n < maxN; n++){
       float a2 = a * a -  b * b;
@@ -52,7 +49,7 @@ const _FS = `
   }
   `;
 
-const zoomSpeed = 0.04;
+const zoomSpeed = 0.03;
 export default function CustomPlane() {
   const shader = useRef();
   const counter = useRef(0);
