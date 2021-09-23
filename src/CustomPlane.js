@@ -13,6 +13,7 @@ const _FS = `
   uniform float offset;
   uniform vec2 center;
   uniform float scale;
+  uniform float counter;
 
 
   void main() {
@@ -40,31 +41,39 @@ const _FS = `
       }
     }
 
-    float brightness = sqrt(n / maxN);
-    if(n == maxN) brightness = 0.0;
+    float brightness;
+    if(n == maxN) {
+      brightness = -0.1;
+    }
+    else {
+      vec2 z = vec2(a,b);
+      float sl = n - log2(log2(dot(z,z)));
+
+      float al = 2.0 + 5.0 * cos(counter);
+      brightness = counter/10.0 * mix( n, sl, al );
+  
+    } 
+    vec3 col= vec3(0.0);
+    col += 0.5 + 0.6*cos( 2.7 + brightness + vec3(0.99,0.05,0.65));
 
 
-    gl_FragColor = vec4(brightness, brightness, brightness, 1.0);
-    
-    // float c = 0.0;
-    // if(a <0.0) c = 1.0;
-    // gl_FragColor = vec4(c, c, c, 1.0);
-
-  }
+    gl_FragColor = vec4(col, 1.0);
+      }
   `;
 
 const zoomSpeed = 0.03;
 export default function CustomPlane() {
   const shader = useRef();
   const counter = useRef(0);
-  const scale = useRef(5);
-  const prevScale = useRef(5);
+  const scale = useRef(3);
+  const prevScale = useRef(3);
   const center = useRef([-0.3, 0]);
   const buttonDown = useRef(false);
   const prevMouse = useRef([]);
   const mousePos = useRef([]);
   const zooming = useRef(0);
   const zoomDirection = useRef(0);
+  const counterDir = useRef(1);
 
   const updateCenter = () => {
     const offset = (window.innerWidth - window.innerHeight) / 2;
@@ -79,7 +88,7 @@ export default function CustomPlane() {
     prevScale.current = scale.current;
     scale.current += scale.current * zoomSpeed * direction;
     if (scale.current < 0.00002) scale.current = 0.00002;
-    else if (scale.current > 5) scale.current = 5;
+    else if (scale.current > 3) scale.current = 3;
   };
   const translate = () => {
     const dx =
@@ -102,8 +111,13 @@ export default function CustomPlane() {
     if (buttonDown.current) {
       translate();
     }
-    // counter.current += 0.01;
-    // shader.current.uniforms.frames.value = counter.current;
+    if (counter.current > Math.PI) {
+      counterDir.current = -1;
+    } else if (counter.current < -Math.PI) {
+      counterDir.current = 1;
+    }
+    counter.current += 0.01 * counterDir.current;
+    shader.current.uniforms.counter.value = counter.current;
   }, []);
   const onPointerDown = (e) => {
     buttonDown.current = true;
@@ -149,6 +163,9 @@ export default function CustomPlane() {
           },
           scale: {
             value: scale.current,
+          },
+          counter: {
+            value: counter.current,
           },
         }}
         vertexShader={_VS}
