@@ -22,16 +22,20 @@ const _FS = `
 
     float ca = a;
     float cb = b;
+    float a2 = 0.0;
+    float b2 = 0.0;
+    float w = 0.0;
 
     float n = 0.0;
     for (; n < maxN; n++){
-      float a2 = a * a -  b * b;
-      float b2 = 2.0 * a * b;
+      b = w - a2 -b2 + cb;
+      a = a2 - b2 + ca;
 
-      a = a2 + ca;
-      b = b2 + cb;
+      a2 = a * a;
+      b2 = b * b;
+      w = (a + b) * (a + b);
 
-      if(abs(a2 + b2) > 4.0){
+      if(a2 + b2 > 4.0){
         break;
       }
     }
