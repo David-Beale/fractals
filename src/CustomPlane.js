@@ -21,21 +21,20 @@ const _FS = `
     float a = ((gl_FragCoord.x - offset) / resolution.x - 0.5) * scale + center.x;
     float b = (gl_FragCoord.y / resolution.y - 0.5) * scale + center.y;
 
-    float ca = a;
-    float cb = b;
+    // float ca = a;
+    // float cb = b;
+    float ca = 0.2;
+    float cb = 0.66;
     float a2 = 0.0;
     float b2 = 0.0;
-    float w = 0.0;
 
     float n = 0.0;
     for (; n < maxN; n++){
-      b = w - a2 -b2 + cb;
-      a = a2 - b2 + ca;
-
       a2 = a * a;
       b2 = b * b;
-      w = (a + b) * (a + b);
-
+      
+      b = (a + a) * b + cb;
+      a = a2 - b2 + ca;
       if(a2 + b2 > 4.0){
         break;
       }
