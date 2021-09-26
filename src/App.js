@@ -1,7 +1,7 @@
 import "./App.css";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import CustomPlane from "./CustomPlane";
+import Main from "./Main";
 
 export default function App() {
   const onPointerMove = (e) => {
@@ -31,7 +31,7 @@ export default function App() {
           far: 10,
         }}
       >
-        <CustomPlane />
+        <Main />
       </Canvas>
     </div>
   );

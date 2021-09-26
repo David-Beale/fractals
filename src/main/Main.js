@@ -5,7 +5,7 @@ import { useResize } from "./hooks/useResize";
 import { useMouseInteraction } from "./hooks/useMouseInteraction";
 import { useCounter } from "./hooks/useCounter";
 
-export default function CustomPlane() {
+export default function Main() {
   const shader = useRef();
   const counter = useRef(0);
   const scale = useRef(3);

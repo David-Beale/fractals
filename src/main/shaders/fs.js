@@ -13,10 +13,10 @@ void main() {
   float a = ratio  * ((gl_FragCoord.x / resolution.x - 0.5) * scale + center.x);
   float b = (gl_FragCoord.y / resolution.y - 0.5) * scale + center.y;
 
-  float ca = a;
-  float cb = b;
-  // float ca = 0.2;
-  // float cb = 0.66;
+  // float ca = a;
+  // float cb = b;
+  float ca = 0.2;
+  float cb = 0.66;
   float a2 = 0.0;
   float b2 = 0.0;
 
@@ -45,8 +45,8 @@ void main() {
 
   } 
   vec3 col= vec3(0.0);
-  col += 0.5 + 0.6*cos( 2.7 + brightness + vec3(0.99,0.05,0.65));
-  // col += 0.5 + 0.6*cos( 2.7 + brightness + vec3(0.04,0.66,0.99));
+  // col += 0.5 + 0.6*cos( 2.7 + brightness + vec3(0.99,0.05,0.65));
+  col += 0.5 + 0.6*cos( 2.7 + brightness + vec3(0.04,0.66,0.99));
 
 
   gl_FragColor = vec4(col, 1.0);
