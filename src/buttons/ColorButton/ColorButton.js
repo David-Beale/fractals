@@ -1,13 +1,13 @@
 import React from "react";
 import { Tooltip } from "@material-ui/core";
-import AutorenewIcon from "@material-ui/icons/Autorenew";
+import ColorLensIcon from "@material-ui/icons/ColorLens";
 import { StyledIconButton } from "../ButtonsStyle";
 
-export default function ShuffleButton({ onClick }) {
+export default function ColorButton({ onClick }) {
   return (
-    <Tooltip title="Random fractal">
+    <Tooltip title="Random colours">
       <StyledIconButton onClick={onClick}>
-        <AutorenewIcon fontSize="large" />
+        <ColorLensIcon fontSize="large" />
       </StyledIconButton>
     </Tooltip>
   );

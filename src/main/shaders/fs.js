@@ -7,6 +7,7 @@ uniform vec2 center;
 uniform float scale;
 uniform float counter;
 uniform vec2 fractal;
+uniform vec3 color;
 
 
 void main() {
@@ -46,9 +47,7 @@ void main() {
 
   } 
   vec3 col= vec3(0.0);
-  // col += 0.5 + 0.6*cos( 2.7 + brightness + vec3(0.99,0.05,0.65));
-  col += 0.5 + 0.6*cos( 2.7 + brightness + vec3(0.04,0.66,0.99));
-
+  col += 0.5 + 0.6*cos( 2.7 + brightness + color);
 
   gl_FragColor = vec4(col, 1.0);
     }

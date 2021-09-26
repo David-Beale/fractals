@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { _VS } from "./shaders/vs";
 import { _FS } from "./shaders/fs";
 import { useResize } from "./hooks/useResize";
 import { useMouseInteraction } from "./hooks/useMouseInteraction";
 import { useCounter } from "./hooks/useCounter";
+import { useFractal } from "./hooks/useFractal";
+import { useColor } from "./hooks/useColor";
 
-export default function Main({ fractal }) {
+export default function Main({ fractal, color }) {
   const shader = useRef();
   const counter = useRef(0);
   const scale = useRef(3);
@@ -30,23 +32,19 @@ export default function Main({ fractal }) {
       fractal: {
         value: [2, 2],
       },
+      color: {
+        value: [0, 0, 0],
+      },
     };
   }, []);
-
-  useEffect(() => {
-    if (fractal[0] < 2) {
-      shader.current.uniforms.fractal.value = fractal;
-      shader.current.uniforms.scale.value = 3;
-      center.current[0] = 0;
-      center.current[1] = 0;
-      scale.current = 3;
-    }
-  }, [fractal]);
 
   const windowSize = useResize(shader);
   const [onPointerDown, onPointerUp, onPointerMove, onWheel] =
     useMouseInteraction(center, scale, shader);
+
   useCounter(counter, shader);
+  useFractal(fractal, shader, center, scale);
+  useColor(shader, color);
 
   return (
     <mesh
