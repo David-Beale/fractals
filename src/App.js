@@ -1,15 +1,15 @@
 import "./App.css";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import Main from "./Main";
+import Main from "./main/Main";
+import Buttons from "./buttons/Buttons";
+import { useState } from "react";
 
 export default function App() {
-  const onPointerMove = (e) => {
-    // if (!shader.current) return;
-    // shader.current.uniforms.mouse.value = [
-    //   THREE.MathUtils.mapLinear(e.clientX, 0, window.innerWidth, 0, 1),
-    //   THREE.MathUtils.mapLinear(e.clientY, 0, window.innerHeight, 1, 0),
-    // ];
+  const [fractal, setFractal] = useState([2, 2]);
+  const onRandomFractal = () => {
+    const x = Math.random() * 2 - 1;
+    const y = Math.random() * 2 - 1;
+    setFractal([x, y]);
   };
 
   const onContextMenu = (e) => {
@@ -17,11 +17,8 @@ export default function App() {
     e.stopPropagation();
   };
   return (
-    <div
-      className="container"
-      onPointerMove={onPointerMove}
-      onContextMenu={onContextMenu}
-    >
+    <div className="container" onContextMenu={onContextMenu}>
+      <Buttons onRandomFractal={onRandomFractal} />
       <Canvas
         orthographic={true}
         camera={{
@@ -31,7 +28,7 @@ export default function App() {
           far: 10,
         }}
       >
-        <Main />
+        <Main fractal={fractal} />
       </Canvas>
     </div>
   );

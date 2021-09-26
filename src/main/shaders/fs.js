@@ -6,6 +6,7 @@ uniform float ratio;
 uniform vec2 center;
 uniform float scale;
 uniform float counter;
+uniform vec2 fractal;
 
 
 void main() {
@@ -13,10 +14,10 @@ void main() {
   float a = ratio  * ((gl_FragCoord.x / resolution.x - 0.5) * scale + center.x);
   float b = (gl_FragCoord.y / resolution.y - 0.5) * scale + center.y;
 
-  // float ca = a;
-  // float cb = b;
-  float ca = 0.2;
-  float cb = 0.66;
+  float ca = a;
+  float cb = b;
+  if(fractal.x < 1.0) ca = fractal.x;
+  if(fractal.y < 1.0) cb = fractal.y;
   float a2 = 0.0;
   float b2 = 0.0;
 
