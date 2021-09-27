@@ -3,9 +3,11 @@ import { IconButton } from "@material-ui/core";
 
 export const Container = styled.div`
   z-index: 1;
-  width: 100%;
+  width: 120px;
   position: fixed;
   top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
