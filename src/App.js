@@ -4,6 +4,7 @@ import Main from "./main/Main";
 import Buttons from "./buttons/Buttons";
 import { useState } from "react";
 import { Vector3 } from "three";
+import Info from "./Info/Info";
 
 export default function App() {
   const [fractal, setFractal] = useState([2, 2]);
@@ -23,12 +24,9 @@ export default function App() {
     setColor(colorVec.toArray());
   };
 
-  const onContextMenu = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
   return (
-    <div className="container" onContextMenu={onContextMenu}>
+    <div className="container">
+      <Info />
       <Buttons
         onRandomFractal={onRandomFractal}
         onRandomColor={onRandomColor}
