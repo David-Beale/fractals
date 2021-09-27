@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/fractals/static/css/main.6140332c.chunk.css",
+    "main.js": "/fractals/static/js/main.0a6f7075.chunk.js",
+    "main.js.map": "/fractals/static/js/main.0a6f7075.chunk.js.map",
+    "runtime-main.js": "/fractals/static/js/runtime-main.ec010970.js",
+    "runtime-main.js.map": "/fractals/static/js/runtime-main.ec010970.js.map",
+    "static/js/2.30ef86ab.chunk.js": "/fractals/static/js/2.30ef86ab.chunk.js",
+    "static/js/2.30ef86ab.chunk.js.map": "/fractals/static/js/2.30ef86ab.chunk.js.map",
+    "index.html": "/fractals/index.html",
+    "static/css/main.6140332c.chunk.css.map": "/fractals/static/css/main.6140332c.chunk.css.map",
+    "static/js/2.30ef86ab.chunk.js.LICENSE.txt": "/fractals/static/js/2.30ef86ab.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.ec010970.js",
+    "static/js/2.30ef86ab.chunk.js",
+    "static/css/main.6140332c.chunk.css",
+    "static/js/main.0a6f7075.chunk.js"
+  ]
+}
